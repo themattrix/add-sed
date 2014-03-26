@@ -25,19 +25,34 @@ function test_smaller_right_works() {
     diff_output <(add_sed <<< "999 + 1") <(echo "1000")
 }
 
+function test_add_large_numbers() {
+    diff_output <(
+        {
+            echo -n "99999999999999999999999999999999999999999999999999999999999+"
+            echo    "235723957283492374301041234013051305103513581236083765032165"
+        } | add_sed
+    ) <(
+        echo "335723957283492374301041234013051305103513581236083765032164"
+    )
+}
+
+function test_add_multiple_numbers() {
+    diff_output <(add_sed <<< "5 + 7 + 9 + 9999 + 100") <(echo "10120")
+}
+
 function test_range() {
     local range_x=111
     local range_y=11
 
     diff_output <(
-        for ((x = 0; x <= "${range_x}"; x++)); do
+        for ((x = 0; x <= "${range_x}"; x += 3)); do
             for ((y = 0; y <= "${range_y}"; y++)); do
                 echo "${x} + ${y}"
                 echo "${y} + ${x}"
             done
         done | add_sed
     ) <(
-        for ((x = 0; x <= "${range_x}"; x++)); do
+        for ((x = 0; x <= "${range_x}"; x += 3)); do
             for ((y = 0; y <= "${range_y}"; y++)); do
                 echo "$((x + y))"
                 echo "$((x + y))"
@@ -58,7 +73,7 @@ function add_sed() {
 }
 
 function diff_output() {
-    diff -y --width=20 --suppress-common-lines "$@"
+    diff "$@"
 }
 
 function run() {
@@ -105,6 +120,8 @@ run test_roll_over_twice
 run test_roll_over_thrice
 run test_smaller_left_works
 run test_smaller_right_works
+run test_add_large_numbers
+run test_add_multiple_numbers
 run test_range
 
 test_summary
