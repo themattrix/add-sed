@@ -19,3 +19,10 @@ For example:
 
     $ echo "5 + 7 + 9 + 9999 + 100" | ./src/add.sed
     10120
+
+Because this script operates on the base-10 strings directly, you can add stupidly large numbers together:
+
+    $ op="99999999999999999999999999999999999999999999999999999999999"
+    $ op="${op} + 235723957283492374301041234013051305103513581236083765032165"
+    $ echo "${op}" | ./src/add.sed
+    335723957283492374301041234013051305103513581236083765032164
